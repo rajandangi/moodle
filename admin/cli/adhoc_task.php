@@ -35,6 +35,7 @@ list($options, $unrecognized) = cli_get_params(
         'showdebugging' => false,
         'execute' => false,
         'keep-alive' => 0,
+        // Add task-max-runtime options here. default to 0.
         'ignorelimits' => false,
         'force' => false,
         'id' => null,
@@ -45,6 +46,7 @@ list($options, $unrecognized) = cli_get_params(
         'h' => 'help',
         'e' => 'execute',
         'k' => 'keep-alive',
+        // Add task-max-runtime short options here.
         'i' => 'ignorelimits',
         'f' => 'force',
         'c' => 'classname',
@@ -66,6 +68,7 @@ Options:
      --showdebugging       Show developer level debugging information
  -e, --execute             Run all queued adhoc tasks
  -k, --keep-alive=N        Keep this script alive for N seconds and poll for new adhoc tasks
+ //  task-max-runtime help information here
  -i  --ignorelimits        Ignore task_adhoc_concurrency_limit and task_adhoc_max_runtime limits
  -f, --force               Run even if cron is disabled
      --id                  Run (failed) task with id
@@ -89,6 +92,7 @@ Run a specific task with debugging:
 To profile a long running task:
 \$sudo -u www-data /usr/bin/php admin/cli/adhoc_task.php --taskslimit=1 --classname='\\some\\class\\name' --ignorelimits
 
+// Show a example of the task-max-runtime option
 EOT;
 
 if ($options['help']) {
@@ -158,10 +162,12 @@ if (!empty($options['failed'])) {
 // Examine params and determine if we should run.
 $execute = (bool) $options['execute'];
 $keepalive = empty($options['keep-alive']) ? 0 : (int) $options['keep-alive'];
+// Get the task-max-runtime value from the cli options.
 $taskslimit = empty($options['taskslimit']) ? null : (int) $options['taskslimit'];
 $checklimits = empty($options['ignorelimits']);
+// show a debugging message and exit if task-max-runtime < keep-alive
 
-if ($classname || $keepalive || $taskslimit) {
+if ($classname || $keepalive || $taskslimit) {  // If task-max-runtime is set, set execute to true.
     $execute = true;
 }
 
@@ -171,4 +177,4 @@ if (!$execute) {
     exit(0);
 }
 
-\core\cron::run_adhoc_tasks(time(), $keepalive, $checklimits, null, $taskslimit, $classname);
+\core\cron::run_adhoc_tasks(time(), $keepalive, $checklimits, null, $taskslimit, $classname); // Pass task-max-runtime value as well.

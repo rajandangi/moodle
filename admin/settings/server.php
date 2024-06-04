@@ -353,6 +353,8 @@ if ($hassiteconfig) {
 
     $temp->add($setting);
 
+    // Add admin configuration setting for keep task-max-runtime.
+
     $temp->add(
         new admin_setting_configtext(
             'task_scheduled_concurrency_limit',

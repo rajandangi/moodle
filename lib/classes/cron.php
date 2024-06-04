@@ -55,9 +55,15 @@ class cron {
     public const MAX_MAIN_PROCESS_KEEPALIVE = 15 * MINSECS;
 
     /**
+     * Set Defaul task-max-runtime option.
+     * Also, Set Max task-max-runtime value.
+     */
+
+    /**
      * Execute cron tasks
      *
      * @param int|null $keepalive The keepalive time for this cron run.
+     * // Pass task-max-runtime value as a parameter.
      */
     public static function run_main_process(?int $keepalive = null): void {
         global $CFG, $DB;
@@ -115,17 +121,21 @@ class cron {
             $keepalive = self::MAX_MAIN_PROCESS_KEEPALIVE;
         }
 
+        // Set task-max-runtime value properly from the config.
+        // If it is not set to the valid value
+
         // Calculate the finish time based on the start time and keepalive.
         $finishtime = $timenow + $keepalive;
+        // Set Another task-max-runtime variable to stop the task from running for too long.
 
         do {
             $startruntime = microtime();
 
             // Run all scheduled tasks.
-            self::run_scheduled_tasks(time(), $timenow);
+            self::run_scheduled_tasks(time(), $timenow); // Pass task-max-runtime value.
 
             // Run adhoc tasks.
-            self::run_adhoc_tasks(time(), 0, true, $timenow);
+            self::run_adhoc_tasks(time(), 0, true, $timenow); // Pass task-max-runtime value.
 
             mtrace("Cron run completed correctly");
 
@@ -171,6 +181,7 @@ class cron {
     public static function run_scheduled_tasks(
         int $startruntime,
         ?int $startprocesstime = null,
+        // Get task-max-runtime time.
     ): void {
         // Allow a restriction on the number of scheduled task runners at once.
         $cronlockfactory = \core\lock\lock_config::get_lock_factory('cron');
@@ -208,7 +219,7 @@ class cron {
                 self::run_inner_scheduled_task($task);
                 unset($task);
 
-                if ((time() - $starttime) > $maxruntime) {
+                if ((time() - $starttime) > $maxruntime) { // Also check task-max-runtime time.
                     mtrace("Stopping processing of scheduled tasks as time limit has been reached.");
                     break;
                 }
@@ -233,6 +244,7 @@ class cron {
     public static function run_adhoc_tasks(
         int $startruntime,
         $keepalive = 0,
+        // Get task-max-runtime time.
         $checklimits = true,
         ?int $startprocesstime = null,
         ?int $maxtasks = null,
@@ -266,6 +278,7 @@ class cron {
 
         $humantimenow = date('r', $startruntime);
         $finishtime = $startruntime + $keepalive;
+        // Set Another task-max-runtime variable to stop the task from running for too long.
         $waiting = false;
         $taskcount = 0;
 
@@ -275,7 +288,7 @@ class cron {
             !\core\task\manager::static_caches_cleared_since($startprocesstime)
         ) {
 
-            if ($checklimits && (time() - $startruntime) >= $maxruntime) {
+            if ($checklimits && (time() - $startruntime) >= $maxruntime) { // Also check task-max-runtime time.
                 if ($waiting) {
                     $waiting = false;
                     mtrace('');

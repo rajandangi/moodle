@@ -461,6 +461,7 @@ $string['cron_enabled_desc'] = 'Cron should normally be enabled, however this se
 $string['cron_help'] = 'The cron.php script runs a number of tasks at different scheduled intervals, such as sending forum post notification emails. The script should be run regularly - ideally every minute.';
 $string['cron_keepalive'] = 'Keep alive';
 $string['cron_keepalive_desc'] = 'The length of time to keep polling for additional tasks. This setting is for ensuring that cron is always running. If you use dedicated task runners, set it to 0. Otherwise, set it to a value similar to the adhoc task concurrency limit. Avoid longer times. The maximum time is 15 minutes.';
+// Add lang_string for task-max-runtime configuration page
 $string['cron_link'] = 'admin/cron';
 $string['cronclionly'] = 'Cron execution via command line only';
 $string['cronerrorclionly'] = 'Sorry, internet access to this page has been disabled by the administrator.';
