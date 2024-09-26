@@ -145,7 +145,7 @@ class conversion extends \core\persistent {
                 SELECT
                     NULL AS conversionid,
                     orphanedsourcefile.id AS conversionsourcefileid,
-                    :oformat AS conversiontargetformat,
+                    " . $DB->sql_cast_to_char(':oformat') . " AS conversiontargetformat,
                     2 AS conversionstatus,
                     NULL AS conversionstatusmessage,
                     NULL AS conversionconverter,
